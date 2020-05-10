@@ -55,8 +55,19 @@ docker logs mysql1 2>&1 | grep GENERATED
 ```
 
 ```
-docker exec -it mysql1 mysql -uroot -p
+docker exec -it mysql1 mysql -u root -p
 
+```
+
+Creating MySQL Data base user:
+```
+CREATE USER 'dev'@'%' IDENTIFIED BY 'dev_password';
+```
+
+Grand all privileges to a user account over a specific database:
+
+```
+GRANT ALL PRIVILEGES ON crud_mono_flask.* TO 'dev'@'%';
 ```
 
 Now we can start working on our Flask project:
