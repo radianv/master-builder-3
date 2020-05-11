@@ -24,13 +24,48 @@ we will install the Initial Web Application from example with just a bit modific
 
 Following the strategy __Migrating your Existing Applications to the AWS Cloud__ using __"Forklift Migration Strategy"__, we will convert current approach from Monolithic to Microservices Application next steps below:
 
-   1. Rehosting & Replatforming , lift-tinker-and-shift.
-   2. Refactoring / Re-architecting
+## Objectives
+- Its purpose is to decouple and modularise system services
+- Separate the system concerns
+- Language and design agnostic
+- Isolated and decoupled deployments
+- Allow for continuous delivery
+- Allow for horizontal scalability
+- Service can be scaled Independently
+-  
+ 
+
+## The Strategy
+
+   1. STEP1 - Rehosting & Replatforming , lift-tinker-and-shift.
+   2. STEP2 - Refactoring / Re-architecting
 
 ## Rehosting & Replatforming , lift-tinker-and-shift.
 
+![Monolithic Application to AWS Cloud][img1]
+
+### Activities
+
+Step 1, 
+
+Step 2,
+
+Step 3,  
+
 ## Refactoring / Re-architecting
+
+![Monolithic Application to Microservices][img2]
+
+### Activities
+
+Step 1, 
+
+Step 2,
+
+Step 3,  
 
 
 
 [img0]: images/mb3-monolithic-app.png "Monolithic Application"
+[img1]: images/mb3-monolithic_app-to-cloud.png "Monolithic Application to Cloud"
+
