@@ -1,4 +1,4 @@
-# Migrating your Existing Applications to the AWS Cloud
+# Master Builder 3
 
 ## AWS Services
 With Amazon Web Services (AWS), you can provision compute power, storage and other resources, gaining access to a suite of elastic IT infrastructure services as your business demands them. With minimal cost and effort, you can move your application to the AWS cloud and reduce capital expenses, minimize support and administrative costs, and retain the performance, security, and reliability requirements your business demands.
@@ -21,24 +21,26 @@ we will install the Initial Web Application from example with just a bit modific
    - If you are familiar with docker you can use my docker approach, please see [Here](docker_approach/my_docker_monolith_install.md)
         
     
+# Migrating your Existing Applications to the AWS Cloud
 
-Following the strategy __Migrating your Existing Applications to the AWS Cloud__ using __"Forklift Migration Strategy"__, we will convert current approach from Monolithic to Microservices Application next steps below:
+The strategy is using __"Forklift Migration Strategy"__, we will convert current approach from Monolithic to Microservices Application next steps below:
 
-## Objectives
+## Objectives of this solution
+- Workload web appliction to cloud
 - Its purpose is to decouple and modularise system services
-- Separate the system concerns
-- Language and design agnostic
+- Leverage cloud
+- Allow for horizontal scalability
+- Separate the system concerns (Microservices)
 - Isolated and decoupled deployments
 - Allow for continuous delivery
 - Allow for horizontal scalability
 - Service can be scaled Independently
--  
  
 
 ## The Strategy
 
-   1. STEP1 - Rehosting & Replatforming , lift-tinker-and-shift.
-   2. STEP2 - Refactoring / Re-architecting
+   1. Rehosting & Replatforming , lift-tinker-and-shift.
+   2. Refactoring / Re-architecting
 
 ## Rehosting & Replatforming , lift-tinker-and-shift.
 
