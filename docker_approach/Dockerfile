@@ -28,6 +28,10 @@ RUN pip install --upgrade pip
 RUN pip install -r /tmp/requirements.txt
 RUN echo "source /usr/local/bin/virtualenvwrapper.sh" >> /root/.profile
 
+WORKDIR /app
+
+COPY source_code/mb3/ /app
 
 COPY database/ /docker-entrypoint-initdb.d/
 
+##ENTRYPOINT ["python", "server.py"]
