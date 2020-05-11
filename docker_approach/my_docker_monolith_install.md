@@ -1,5 +1,14 @@
 # Python Manual Install
-before starting, you will need to install Docker on your base system, following [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) 
+
+A simple CRUD application using Flask and MySQL
+
+Built With
+ - Python 2.7
+ - Python Libraries: flask and pymysql
+ - MySQL
+
+
+__NOTE:__ before starting, you will need to install Docker on your base system, following [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) 
 
 1.- going to work directory `cd docker_approach/`
 

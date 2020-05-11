@@ -1,5 +1,12 @@
 ### Project setup steps on local
 
+A simple CRUD application using Flask and MySQL
+
+Built With
+ - Python 2.7
+ - Python Libraries: flask and pymysql
+ - MySQL
+ 
 1.- Install python & pip, there two ways, first doing manual install please see [Here](python_manual_install.md) (this is optional, just another old school way...) in this case we will use 
 next steps  `sudo apt-get install python` then install pip `sudo apt-get install python-pip`.
 
