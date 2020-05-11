@@ -16,10 +16,10 @@ source /usr/local/bin/virtualenvwrapper.sh
 
 ```
 
-then reload new variables using `. ~/.profile` or `source ~/.bashrc` (depends on what in there, more info plese see (the functional differences between `.profile` `.bash_profile` and `.bashrc`)[https://serverfault.com/questions/261802/what-are-the-functional-differences-between-profile-bash-profile-and-bashrc]) 
+then reload new variables using `. ~/.profile` or `source ~/.bashrc` depends on what's in there, more info please see [the functional differences between `.profile` `.bash_profile` and `.bashrc`](https://serverfault.com/questions/261802/what-are-the-functional-differences-between-profile-bash-profile-and-bashrc) 
 
 
-4.- Install MySQL, (A Quick Guide to Using the MySQL APT Repository)[https://dev.mysql.com/doc/mysql-apt-repo-quick-guide/en/#apt-repo-fresh-install]
+4.- Install MySQL, [A Quick Guide to Using the MySQL APT Repository](https://dev.mysql.com/doc/mysql-apt-repo-quick-guide/en/#apt-repo-fresh-install)
 
 5.- Creating MySQL Database and webapp Schemas, you must connect to MySQL using root `mysql -u root -p`:
 ```

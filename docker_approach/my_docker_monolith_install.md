@@ -1,15 +1,17 @@
 # Python Manual Install
-before starting, you will need to install Docker on your base system, following (Install Docker Engine on Ubuntu)[https://docs.docker.com/engine/install/ubuntu/] 
+before starting, you will need to install Docker on your base system, following [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) 
 
-1.- we will create creating docker volume first, just to share data between container and local filesystem.
+1.- going to work directory `cd docker_approach/`
+
+
+2.- we will create creating docker volume first, just to share data between container and local filesystem.
 ```
 docker volume create --name mb3_data --opt type=none --opt device=~/path-to-project/master-builder-3/workspace --opt o=bind
 ```
-2.- then, we will build Docker image:
+3.- then, we will build Docker image:
 ```
 docker build --no-cache -t "aws-mb/full-stack-mono-python:1.0" .
 ```
-3.- going to work directory `cd docker_approach/`
 
 4.- create container using next command:
 ```
