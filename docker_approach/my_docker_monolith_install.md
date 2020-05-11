@@ -1,4 +1,4 @@
-### Project setup steps on local using Docker
+# Project setup steps on local using Docker
 
 A simple CRUD application using Flask and MySQL
 

@@ -1,4 +1,4 @@
-### Project setup steps on local
+# Project setup steps on local
 
 A simple CRUD application using Flask and MySQL
 
