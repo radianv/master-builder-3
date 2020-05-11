@@ -1,4 +1,4 @@
-# Python Manual Install
+### Project setup steps on local using Docker
 
 A simple CRUD application using Flask and MySQL
 
