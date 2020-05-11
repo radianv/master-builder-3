@@ -6,6 +6,7 @@ Built With
  - Python 2.7
  - Python Libraries: flask and pymysql
  - MySQL
+ - Docker
 
 
 __NOTE:__ before starting, you will need to install Docker on your base system, following [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) 
