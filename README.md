@@ -1,41 +1,23 @@
-# crud-application-using-flask-and-mysql
-A simple CRUD application using Flask and MySQL
+# Migrating your Existing Applications to the AWS Cloud
 
-### Built With
+## AWS Services
+With Amazon Web Services (AWS), you can provision compute power, storage and other resources, gaining access to a suite of elastic IT infrastructure services as your business demands them. With minimal cost and effort, you can move your application to the AWS cloud and reduce capital expenses, minimize support and administrative costs, and retain the performance, security, and reliability requirements your business demands.
 
-* Manual Installing Python:
+## The Web Base application
+A simple CRUD application using Flask and MySQL, this project has been based  on `https://github.com/muhammadhanif/crud-application-using-flask-and-mysql`, this Application is
+docker based (my docker approach, please see (here)[topics/my_docker_monolith_install.md]), the main objective of this project is use [Monolith Application](https://blog.heptio.com/what-is-a-monolithic-application-e375f5ad5ecb), regarding that, we will convert current approach to monolithic next steps below:
 
-Step 1:
-```
-sudo apt-get update
-sudo apt-get install build-essential checkinstall
-sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
-```
+### Project setup steps
 
-Step 2:
-```
-cd /usr/src
-sudo wget https://www.python.org/ftp/python/2.7.16/Python-2.7.16.tgz
-```
+1.- Install python & pip, there two ways to do that manual install [here](topics/python_manual_install.md) (this is optional, just another old school way...) in this case we will use 
+next steps  `sudo apt-get install python` then install pip `sudo apt-get install python-pip`.
 
-Step 3:
-```
-sudo tar xzf Python-2.7.16.tgz
-```
+2.- Installing additional libraries `pip install virtualenv`, `pip install virtualenvwrapper`. 
 
-Step 4:
-```
-cd Python-2.7.16
-sudo ./configure --enable-optimizations
-sudo make altinstall
-
-```
-
-**Note**, Also if we don't have problems we will use `apt-get install python`
-
-Step 5, installing `pip`, `pip install virtualenv`, `pip install virtualenvwrapper` and add in `.profile` next variables:
+3.- Next add in `vi ~/.profile` or `vi ~/.bashrc` next variables:
 ```
 #virtualenvwrapper setup
+
 export WORK_HOME=$HOME/envs
 export PROJECT_HOME=$HOME/dev
 
@@ -43,70 +25,28 @@ source /usr/local/bin/virtualenvwrapper.sh
 
 ```
 
-Creating docker volume,
-```
-docker volume create --name mb3_data --opt type=none --opt device=~/github/crud-monolith-application-using-flask-and-mysql/workspace --opt o=bind
-```
+then reload new variables using `. ~/.profile` or `source ~/.bashrc` (depends on what in there, more info plese see (the functional differences between `.profile` `.bash_profile` and `.bashrc`)[https://serverfault.com/questions/261802/what-are-the-functional-differences-between-profile-bash-profile-and-bashrc]) 
 
-Checking MySQL
 
-```
-docker logs mysql1 2>&1 | grep GENERATED
-```
+4.- Install MySQL, (A Quick Guide to Using the MySQL APT Repository)[https://dev.mysql.com/doc/mysql-apt-repo-quick-guide/en/#apt-repo-fresh-install]
 
+5.- Creating MySQL Database and webapp Schemas, you must connect to MySQL using root `mysql -u root -p`:
 ```
-docker exec -it mysql1 mysql -u root -p
-
+CREATE DATABASE crud_mono_flask;
 ```
-
 Creating MySQL Data base user:
 ```
 CREATE USER 'dev'@'%' IDENTIFIED BY 'dev_password';
 ```
-
 Grand all privileges to a user account over a specific database:
-
 ```
 GRANT ALL PRIVILEGES ON crud_mono_flask.* TO 'dev'@'%';
 ```
+6.- Installing Monolith WebApplication
 
-Now we can start working on our Flask project:
-
-1. Create a *virtualenvwrapper* using `mkproject HelloWorld`, if the project has been done, you can work on it using next command `workon HelloWorld`
-
-2. Create `helloworld.py` the content looks like:
-
-```
-from flask import Flask
-
-
-app = Flask(__name__)
-
-@app.route('/index')
-def index():
-        return 'Hello world!'
-
-if __name__== "__main__":
-        app.run(host='0.0.0.0', port=5000) 
-``` 
-
-----------------------------------------------------------------------------------------------------------------
-
-
-* Python Libraries: flask and pymysql
-* MySQL
-* AdminLTE 2
-
-### Running on Docker
-
-```
-docker-compose up -d
-```
-
-After executing, you will have 2 running cointainers on your Docker host: `phonebook-app` and `phonebook-mysql`. For accessing the web application, open your browser and go to http://your-docker-host-ip-address:8181
-
-To destroy the containers, execute:
-
-```
-docker-compose down --rmi all
-```
+ - Clone this repository `git clone https://github.com/radianv/master-builder-3.git`
+ - Then `cd master-builder-3/workspace/dev/mb3/`
+ - Enable virtualenv project `mkvirtualenv mb3` and install dependencies `pip install Flask` and `pip install pymysql`
+ - next execute `python server.py`
+ - ypu will see `Running on http://0.0.0.0:80/ (Press CTRL+C to quit)` 
+ 
