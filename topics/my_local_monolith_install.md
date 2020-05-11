@@ -46,4 +46,4 @@ GRANT ALL PRIVILEGES ON crud_mono_flask.* TO 'dev'@'%';
  - Then `cd master-builder-3/workspace/dev/mb3/`
  - Enable virtualenv project `mkvirtualenv mb3` and install dependencies `pip install Flask` and `pip install pymysql`
  - next execute `python server.py`
- - ypu will see `Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)` 
+ - ypu will see `Running on http://localhost:5000/` 
