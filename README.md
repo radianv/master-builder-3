@@ -62,6 +62,7 @@ chmod +x /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 git clone https://github.com/radianv/master-builder-3.git
 docker-compose -f /master-builder-3/workspace/dev/code-webapp-micro/frontend/docker-compose.deploy.yml up -d
+chkconfig docker on
 ```
 - Add Storage as is (just default).
 - Add Tags, use next values: `key=Name` and `Value=WebServer1`
