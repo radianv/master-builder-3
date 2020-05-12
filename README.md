@@ -4,15 +4,17 @@
 With Amazon Web Services (AWS), you can provision compute power, storage and other resources, gaining access to a suite of elastic IT infrastructure services as your business demands them. With minimal cost and effort, you can move your application to the AWS cloud and reduce capital expenses, minimize support and administrative costs, and retain the performance, security, and reliability requirements your business demands.
 
 ## The Web Base application
-A simple CRUD application using Flask and MySQL. This project has been based  on [this example](https://github.com/muhammadhanif/crud-application-using-flask-and-mysql), this Application is
-docker based, the main objective of this project is elevate this Monolith to Microservices, in order to achieve it 
-we will install a **Core Web Application** from next examples with just a bit modification,  we have three options:
+A simple CRUD application using Flask and MySQL. This project has been based  on [this example](https://github.com/muhammadhanif/crud-application-using-flask-and-mysql) and 
+this [Hands on Microservices with Python](https://github.com/PacktPublishing/Hands-on-Microservices-with-Python), 
+this Application is docker based, the main objective of this project is elevate this Monolith to Microservices on AWS, 
+in order to achieve it we will install a **Core Web Application** from next examples with just a bit modification,  
+we have three options (we will use **C** Option):
 
-   - Using local based install, please see [Here](topics/my_local_monolith_install.md)
+   - A, Using local based install, please see [Here](topics/my_local_monolith_install.md)
    
-   - If you are familiar with docker you can use my docker approach, please see [Here](docker_approach/my_docker_monolith_install.md)
+   - B, If you are familiar with docker you can use my docker approach, please see [Here](docker_approach/my_docker_monolith_install.md)
    
-   - Finally, Web Application with Microservices (__*this case is recommended it's has good fit about the initial use case*__), please see [Here](workspace/dev/code-webapp-micro/frontend/)
+   - C, Finally, Web Application with Microservices (__*this case is recommended it's has good fit about the initial use case*__), please see [Here](workspace/dev/code-webapp-micro/frontend/)
         
     
 # Migrating your Existing Applications to the AWS Cloud
