@@ -48,11 +48,11 @@ The strategy is using __"Forklift Migration Strategy"__, we will convert current
 
 ### Activities
 
-Step 1, 
+Step 1, Creating EC2 Instance
 
-Step 2,
+Step 2, Deploy Web Application code from Github account
 
-Step 3,  
+Step 3, Create ELB and Target Groups
 
 ## Refactoring / Re-architecting
 
