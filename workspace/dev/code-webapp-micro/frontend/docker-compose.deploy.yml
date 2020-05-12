@@ -30,7 +30,7 @@ services:
     ports:
       - 8081:5000
     volumes:
-      - ../product_service.git/app:/app
+      - ../product_service/app:/app
       - product-node-modules:/app/node_modules
     links:
       - product_db
@@ -57,7 +57,7 @@ services:
     ports:
       - 8082:5000
     volumes:
-      - ../user_service.git/app:/app
+      - ../user_service/app:/app
       - user-node-modules:/app/node_modules
     depends_on:
       - user_db
@@ -83,7 +83,7 @@ services:
     ports:
       - 8083:5000
     volumes:
-      - ../order_service.git/app:/app
+      - ../order_service/app:/app
       - order-node-modules:/app/node_modules
     depends_on:
       - order_db
