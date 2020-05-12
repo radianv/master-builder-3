@@ -42,11 +42,38 @@ The strategy is using __"Forklift Migration Strategy"__, we will convert current
 
 ### Activities
 
-Step 1, Creating and Setup EC2 Instance for initial environment. 
+Step 1, Creating and Setup EC2 Instance for initial environment.
 
-Step 2, Deploy Web Application code from Github Account.
+- Go to [Lunch instance wizard](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:)
+- Chose Free tier and select, **Amazon Linux 2 AMI (HVM), SSD Volume Type**.
+. For instance type we will use **t2.large** it has well fit for Web Application Environment performance, please see more about [Amazon EC2 Instance Types](https://aws.amazon.com/ec2/instance-types/)
+- For ** Configure Instance Details** we will setup next Bootstrap script, for more information see [Running commands on your Linux instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
+```
+#!/bin/bash
+yum update -y
+yum install -y git
+amazon-linux-extras install docker
+service docker start
+usermod -a -G docker ec2-user
+curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+git clone https://github.com/radianv/master-builder-3.git
+docker-compose -f /master-builder-3/workspace/dev/code-webapp-micro/frontend/docker-compose.deploy.yml up -d
+```
+- Add Storage as is (just default).
+- Add Tags, use next values: `key=Name` and `Value=WebServer1`
+- Next Configure New Security Group, next values: 
+  - Name: webMB3
+  - VPC: default
+  - Security group rules: Allow access to next ports: `80`, `22`, `3306`  
+- Finally Review and Launch
 
-Step 3, Create ELB and Target Groups.
+Step 2, Create ELB and Target Groups.
+
+Step 3, Add WebServer to Target Group.
+
+Step 4, check  the application is a Live on AWS:http://myalb-1820198848.us-east-1.elb.amazonaws.com/
 
 ## Refactoring / Re-architecting
 
