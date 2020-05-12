@@ -70,4 +70,5 @@ Step 3,
 
 [img0]: images/mb3-monolithic-app.png "Monolithic Application"
 [img1]: images/mb3-monolithic_app-to-cloud.png "Monolithic Application to Cloud"
+[img2]: images/mb3-microservices-app.png "Microservices Application"
 
