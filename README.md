@@ -1,10 +1,10 @@
 # Master Builder 3
 
 ## AWS Services
-With Amazon Web Services (AWS), you can provision compute power, storage and other resources, gaining access to a suite of elastic IT infrastructure services as your business demands them. With minimal cost and effort, you can move your application to the AWS cloud and reduce capital expenses, minimize support and administrative costs, and retain the performance, security, and reliability requirements your business demands.
+With [Amazon Web Services (AWS)](https://aws.amazon.com/what-is-aws/), you can provision compute power, storage and other resources, gaining access to a suite of elastic IT infrastructure services as your business demands them. With minimal cost and effort, you can move your application to the AWS cloud and reduce capital expenses, minimize support and administrative costs, and retain the performance, security, and reliability requirements your business demands.
 
 ## The Web Base application
-A simple CRUD application using Flask and MySQL. This project has been based  on [this example](https://github.com/muhammadhanif/crud-application-using-flask-and-mysql) and 
+A simple **Web Application using Flask and MySQL**. This project has been based  on [CRUD application using Flask and MySQL](https://github.com/muhammadhanif/crud-application-using-flask-and-mysql) and 
 this [Hands on Microservices with Python](https://github.com/PacktPublishing/Hands-on-Microservices-with-Python), 
 this Application is docker based, the main objective of this project is elevate this Monolith to Microservices on AWS, 
 in order to achieve it we will install a **Core Web Application** from next examples with just a bit modification,  
