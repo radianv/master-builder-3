@@ -12,7 +12,7 @@ we will install a **Core Web Application** from next examples with just a bit mo
    
    - If you are familiar with docker you can use my docker approach, please see [Here](docker_approach/my_docker_monolith_install.md)
    
-   - Finally, Web Application with Microservices (__*this case is recommended it's has good fit about the initial use case*__), please see [Here](workspace/dev/code-webapp-micro/frontend/Hands-on-Microservices-with-Python)
+   - Finally, Web Application with Microservices (__*this case is recommended it's has good fit about the initial use case*__), please see [Here](workspace/dev/code-webapp-micro/frontend/)
         
     
 # Migrating your Existing Applications to the AWS Cloud

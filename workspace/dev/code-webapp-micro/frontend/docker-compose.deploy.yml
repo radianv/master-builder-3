@@ -26,7 +26,7 @@ services:
 
   product:
     build:
-      context: ../product_service.git/
+      context: ../product_service/
     ports:
       - 8081:5000
     volumes:
@@ -53,7 +53,7 @@ services:
 
   user:
     build:
-      context: ../user_service.git/
+      context: ../user_service/
     ports:
       - 8082:5000
     volumes:
@@ -79,7 +79,7 @@ services:
 
   order:
     build:
-      context: ../order_service.git/
+      context: ../order_service/
     ports:
       - 8083:5000
     volumes:
