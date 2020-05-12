@@ -70,11 +70,13 @@ docker-compose -f /master-builder-3/workspace/dev/code-webapp-micro/frontend/doc
 - Finally Review and Launch
 
 Step 2, Create ELB and Target Groups.
+  - **_under construction_**
 
 Step 3, Add WebServer to Target Group.
-
+  - **_under construction_**
 Step 4, check  the application is a Live on AWS:http://myalb-1820198848.us-east-1.elb.amazonaws.com/
-
+  - **_under construction_**
+  
 ## Refactoring / Re-architecting
 
 ![Monolithic Application to Microservices][img2]
@@ -82,14 +84,19 @@ Step 4, check  the application is a Live on AWS:http://myalb-1820198848.us-east-
 ### Activities
 
 Step 1, Move the application to Microservices using ECS.
-
+  - **_under construction_**
+  
 Step 2, Containerize the Monolith
+  - **_under construction_**
 
 Step 3, Deploy the Monolith
+- **_under construction_**
 
 Step 4. Break the Monolith
+- **_under construction_**
 
 step 5. Deploy Microservices
+- **_under construction_**
 
 [img0]: images/mb3-monolithic-app.png "Monolithic Application"
 [img1]: images/mb3-monolithic_app-to-cloud.png "Monolithic Application to Cloud"
