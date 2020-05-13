@@ -1,3 +1,4 @@
 *.xml
 *.zip
 draw.io/
+*.pyc

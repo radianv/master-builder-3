@@ -81,7 +81,7 @@ Step 3, Add WebServer to Target Group.
 Step 4, check  the application is a Live on AWS:http://myalb-1820198848.us-east-1.elb.amazonaws.com/
   - **_under construction_**
  
-Step 5, Migrate your MySQL Data using [MDS Strategy 1](https://aws.amazon.com/dms/) 
+Step 5, Migrate Data from Local MySQL to RDS using [MDS Strategy 1](https://aws.amazon.com/dms/) 
   - Create the RDS instance either through the AWS console or using CloudFormation.
   - Create the DMS replication instance and provision it in a subnet that can communicate with your non-RDS instance (source) and the RDS instance (target).
   - Create a Source Endpoint and a Target Endpoint. The DMS instance will use this connection information to connect to the databases.
