@@ -45,8 +45,8 @@ services:
     volumes:
       - product-db-data:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=test
-      - MYSQL_DATABASE=product
+      - MYSQL_ROOT_PASSWORD=*.101091Root*
+      - MYSQL_DATABASE=product-db
     restart: always
     networks:
       - order-network
@@ -70,8 +70,8 @@ services:
     volumes:
       - user-db-data:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=test
-      - MYSQL_DATABASE=user
+      - MYSQL_ROOT_PASSWORD=*.101091User*
+      - MYSQL_DATABASE=user-db
     restart: always
     networks:
       - order-network
@@ -96,8 +96,8 @@ services:
     volumes:
       - order-db-data:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=test
-      - MYSQL_DATABASE=order
+      - MYSQL_ROOT_PASSWORD=*.101091Root*
+      - MYSQL_DATABASE=order-db
     restart: always
     networks:
       - order-network
