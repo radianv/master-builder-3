@@ -13,8 +13,8 @@ def create_app():
     app.config.update(dict(
         SECRET_KEY="powerful secretkey",
         WTF_CSRF_SECRET_KEY="a csrf secret key",
-        SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:test@product_db/product',
-        #SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:*.101091Root*@product.ccrz0cn5l7sv.us-east-1.rds.amazonaws.com/product',
+        #SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:test@product_db/product',
+        SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:*.101091Root*@product.ccrz0cn5l7sv.us-east-1.rds.amazonaws.com:3306/product',
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     ))
 
