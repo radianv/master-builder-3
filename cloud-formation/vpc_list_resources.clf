@@ -1,0 +1,98 @@
+[
+    {
+        "dev/vpc": [
+            {
+                "LogicalResourceId": "AttachGatewayMictlan",
+                "PhysicalResourceId": "vpc-AttachG-VFJ54OWOAQYC"
+            },
+            {
+                "LogicalResourceId": "InternetGatewayMictlan",
+                "PhysicalResourceId": "igw-091ae2b113cac7cae"
+            },
+            {
+                "LogicalResourceId": "MictlanManagementSubnet1",
+                "PhysicalResourceId": "subnet-0316f268a2043828e"
+            },
+            {
+                "LogicalResourceId": "MictlanNatGateway",
+                "PhysicalResourceId": "nat-0e35ecb69364ccebd"
+            },
+            {
+                "LogicalResourceId": "MictlanNatGatewayEIP",
+                "PhysicalResourceId": "3.96.9.2"
+            },
+            {
+                "LogicalResourceId": "MictlanPrivateRoute",
+                "PhysicalResourceId": "vpc-Mictlan-1GX9ZFDC1BTC5"
+            },
+            {
+                "LogicalResourceId": "MictlanPrivateRouteTable",
+                "PhysicalResourceId": "rtb-0cb5ccf0421c5d334"
+            },
+            {
+                "LogicalResourceId": "MictlanPrivateRouteTableAssociation1",
+                "PhysicalResourceId": "rtbassoc-033b99303d15c7200"
+            },
+            {
+                "LogicalResourceId": "MictlanPrivateRouteTableAssociation2",
+                "PhysicalResourceId": "rtbassoc-0822c6fdab0cd468f"
+            },
+            {
+                "LogicalResourceId": "MictlanPrivateRouteTableAssociation3",
+                "PhysicalResourceId": "rtbassoc-0c1d32275ba07b89a"
+            },
+            {
+                "LogicalResourceId": "MictlanPrivateSubnet1",
+                "PhysicalResourceId": "subnet-07c25d99d5b47480f"
+            },
+            {
+                "LogicalResourceId": "MictlanPrivateSubnet2",
+                "PhysicalResourceId": "subnet-0f18fab5887526777"
+            },
+            {
+                "LogicalResourceId": "MictlanPrivateSubnet3",
+                "PhysicalResourceId": "subnet-028d80d435d91eb19"
+            },
+            {
+                "LogicalResourceId": "MictlanPublicRoute",
+                "PhysicalResourceId": "vpc-Mictlan-1WV8RK9DSSVE6"
+            },
+            {
+                "LogicalResourceId": "MictlanPublicSubnet1",
+                "PhysicalResourceId": "subnet-0391a67e0107849e4"
+            },
+            {
+                "LogicalResourceId": "MictlanPublicSubnet2",
+                "PhysicalResourceId": "subnet-05e9c06c796b50135"
+            },
+            {
+                "LogicalResourceId": "MictlanPublicSubnet3",
+                "PhysicalResourceId": "subnet-0c478f00c05b12aa6"
+            },
+            {
+                "LogicalResourceId": "MictlanRouteTable",
+                "PhysicalResourceId": "rtb-0cf3941464e0db803"
+            },
+            {
+                "LogicalResourceId": "MictlanRouteTableAssociation1",
+                "PhysicalResourceId": "rtbassoc-051792b592e6cad81"
+            },
+            {
+                "LogicalResourceId": "MictlanRouteTableAssociation2",
+                "PhysicalResourceId": "rtbassoc-065bb1c1ffd765b04"
+            },
+            {
+                "LogicalResourceId": "MictlanRouteTableAssociation3",
+                "PhysicalResourceId": "rtbassoc-0fb636bc956d76222"
+            },
+            {
+                "LogicalResourceId": "MictlanSecurityGroupForInstances",
+                "PhysicalResourceId": "sg-03b468e03e41d9036"
+            },
+            {
+                "LogicalResourceId": "VPCMictlan",
+                "PhysicalResourceId": "vpc-0f5cf0a70a692409d"
+            }
+        ]
+    }
+]

@@ -44,7 +44,7 @@ The strategy is using __"Forklift Migration Strategy"__, we will convert current
 
 ### Activities
 
-Step 1, Creating and Setup EC2 Instance for initial environment.
+__Step 1.__ Creating and Setup EC2 Instance for initial environment.
 
 - Go to [Lunch instance wizard](https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:)
 - Chose Free tier and select, **Amazon Linux 2 AMI (HVM), SSD Volume Type**.
@@ -72,16 +72,16 @@ chkconfig docker on
   - Security group rules: Allow access to next ports: `80`, `22`, `3306`  
 - Finally Review and Launch
 
-Step 2, Create ELB and Target Groups.
+__Step 2.__ Create ELB and Target Groups.
   - **_under construction_**
 
-Step 3, Add WebServer to Target Group.
+__Step 3.__ Add WebServer to Target Group.
   - **_under construction_**
 
-Step 4, check  the application is a Live on AWS:http://myalb-1820198848.us-east-1.elb.amazonaws.com/
+__Step 4.__ check  the application is a Live on AWS:http://myalb-1820198848.us-east-1.elb.amazonaws.com/
   - **_under construction_**
  
-Step 5, Migrate Data from Local MySQL to RDS using [MDS Strategy 1](https://aws.amazon.com/dms/) 
+__Step 5.__ Migrate Data from Local MySQL to RDS using [MDS Strategy 1](https://aws.amazon.com/dms/) 
   - Create the RDS instance either through the AWS console or using CloudFormation.
   - Create the DMS replication instance and provision it in a subnet that can communicate with your non-RDS instance (source) and the RDS instance (target).
   - Create a Source Endpoint and a Target Endpoint. The DMS instance will use this connection information to connect to the databases.
@@ -90,6 +90,15 @@ Step 5, Migrate Data from Local MySQL to RDS using [MDS Strategy 1](https://aws.
   - Verify data in the RDS instance.
   - Connecting the WebApplication to a DB Instance Running the MySQL RDS.
   - Verify WebApplication works normally, http://myalb-1820198848.us-east-1.elb.amazonaws.com/
+
+__Step 6.__ Using Cloud Formation enable Raw Environment using `sceptre` 
+  - docker pull cloudreach/sceptre:2.1.4
+  - go to `cd cloud-formation`
+  - you must configure you aws cli
+  - docker run -v $(pwd):/project -v /home/me/.aws/:/root/.aws/:ro --name aws-sceptre cloudreach/sceptre::2.1.4
+  - or if the docker is already done you will use `docker start -ia aws-sceptre`
+  - `cd my-sceptre-raw-project/`
+  - `sceptre create  dev/mb3-raw.yaml`
   
 ## Refactoring / Re-architecting
 
@@ -97,22 +106,27 @@ Step 5, Migrate Data from Local MySQL to RDS using [MDS Strategy 1](https://aws.
 
 ### Activities
 
-Step 1, Move the application to Microservices using ECS.
+__Step 1,__ Move the application to Microservices using ECS.
   - **_under construction_**
   
-Step 2, Containerize the Monolith
+__Step 2,__ Containerize the Monolith
   - **_under construction_**
 
-Step 3, Deploy the Monolith
+__Step 3,__ Deploy the Monolith
 - **_under construction_**
 
-Step 4. Break the Monolith
+__Step 4.__ Break the Monolith
 - **_under construction_**
 
-step 5. Deploy Microservices
+__step 5.__ Deploy Microservices
 - **_under construction_**
+
+__Step 6.__ Using Cloud Formation enable **Optimized Environment**
+  - `cd my-sceptre-raw-project/`
+  - `sceptre create  dev/mb3-optimized.yaml`
+  
+  
 
 [img0]: images/mb3-monolithic-app.png "Monolithic Application"
 [img1]: images/mb3-monolithic_app-to-cloud.png "Monolithic Application to Cloud"
 [img2]: images/mb3-microservices-app.png "Microservices Application"
-
