@@ -95,7 +95,7 @@ __Step 6.__ Using Cloud Formation to enable Environment, we will using [Sceptre]
   - docker pull cloudreach/sceptre:2.1.4
   - go to `cd cloud-formation`
   - you must configure you aws cli
-  - docker run -v $(pwd):/project -v /home/me/.aws/:/root/.aws/:ro --name aws-sceptre cloudreach/sceptre::2.1.4
+  - ¨docker run -it --entrypoint='' -v $(pwd):/project -v /home/ec2-user/.aws/:/root/.aws/:ro --name aws-sceptre cloudreach/sceptre:2.1.4 sh`
   - or if the docker is already done you will use `docker start -ia aws-sceptre`
   - `cd my-sceptre-raw-project/`
   - EC2 Stack, `sceptre create  dev/ec3-sample` please see Template into sceptre project [Here.](cloud-formation/my-sceptre-project/templates/ec2-sample.yaml)
