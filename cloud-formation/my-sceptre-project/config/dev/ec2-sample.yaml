@@ -1,0 +1,2 @@
+template_path: ec2-sample.yaml
+stack_name: ec2-sample

@@ -1,0 +1,2 @@
+template_path: rds-example-mysql.yaml
+stack_name: rds-example-mysql
