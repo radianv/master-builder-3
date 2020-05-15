@@ -98,7 +98,8 @@ __Step 6.__ Using Cloud Formation enable Raw Environment using `sceptre`
   - docker run -v $(pwd):/project -v /home/me/.aws/:/root/.aws/:ro --name aws-sceptre cloudreach/sceptre::2.1.4
   - or if the docker is already done you will use `docker start -ia aws-sceptre`
   - `cd my-sceptre-raw-project/`
-  - `sceptre create  dev/mb3-raw.yaml`
+  - EC2 Stack, `sceptre create  dev/ec3-sample` please see Template into sceptre project [Here.](cloud-formation/my-sceptre-project/templates/ec2-sample.yaml)
+  - RDS Mysql Stack, `sceptre create  dev/ec3-sample` please see Template into sceptre project [Here.](cloud-formation/my-sceptre-project/templates/rds-example-mysql.yaml)
   
 ## Refactoring / Re-architecting
 
