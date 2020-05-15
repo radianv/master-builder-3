@@ -42,6 +42,8 @@ The strategy is using __"Forklift Migration Strategy"__, we will convert current
 
 ![Monolithic Application to AWS Cloud][img1]
 
+- ###NOTE, HERE WE CAN EDIT THE FILE ON LINE USING [Amazon Dra.IO](https://drawio.corp.amazon.com/#LMB2-AmazonWebServices.drawio)
+
 ### Activities
 
 __Step 1.__ Creating and Setup EC2 Instance for initial environment.
