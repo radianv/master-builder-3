@@ -77,11 +77,8 @@ __Step 2.__ Create ELB and Target Groups.
 
 __Step 3.__ Add WebServer to Target Group.
   - **_under construction_**
-
-__Step 4.__ check  the application is a Live on AWS:http://myalb-1820198848.us-east-1.elb.amazonaws.com/
-  - **_under construction_**
  
-__Step 5.__ Migrate Data from Local MySQL to RDS using [MDS Strategy 1](https://aws.amazon.com/dms/) 
+__Step 4.__ Migrate Data from Local MySQL to RDS using [MDS Strategy 1](https://aws.amazon.com/dms/) 
   - Create the RDS instance either through the AWS console or using CloudFormation.
   - Create the DMS replication instance and provision it in a subnet that can communicate with your non-RDS instance (source) and the RDS instance (target).
   - Create a Source Endpoint and a Target Endpoint. The DMS instance will use this connection information to connect to the databases.
@@ -89,9 +86,10 @@ __Step 5.__ Migrate Data from Local MySQL to RDS using [MDS Strategy 1](https://
   - The migration process will begin.
   - Verify data in the RDS instance.
   - Connecting the WebApplication to a DB Instance Running the MySQL RDS.
-  - Verify WebApplication works normally, http://myalb-1820198848.us-east-1.elb.amazonaws.com/
 
-__Step 6.__ Using Cloud Formation enable Raw Environment using `sceptre` 
+__Step 5.__ check  the application is a Live on AWS: [MyELB-1074376332.ca-central-1.elb.amazonaws.com](MyELB-1074376332.ca-central-1.elb.amazonaws.com)
+
+__Step 6.__ Using Cloud Formation to enable Environment, we will using [Sceptre](https://sceptre.cloudreach.com/latest/index.html) 
   - docker pull cloudreach/sceptre:2.1.4
   - go to `cd cloud-formation`
   - you must configure you aws cli
