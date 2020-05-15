@@ -87,7 +87,7 @@ __Step 4.__ Migrate Data from Local MySQL to RDS using [MDS Strategy 1](https://
   - Verify data in the RDS instance.
   - Connecting the WebApplication to a DB Instance Running the MySQL RDS.
 
-__Step 5.__ check  the application is a Live on AWS: [MyELB-1074376332.ca-central-1.elb.amazonaws.com](http://myelb-1074376332.ca-central-1.elb.amazonaws.com/)
+__Step 5.__ check  the application is a Live on AWS: [http://masterbuilder3.amazonaws.com/](http://myelb-1074376332.ca-central-1.elb.amazonaws.com/)
 
 __Step 6.__ Using Cloud Formation to enable Environment, we will using [Sceptre](https://sceptre.cloudreach.com/latest/index.html) 
   - docker pull cloudreach/sceptre:2.1.4
