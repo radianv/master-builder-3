@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: MasterBuilder 3
 
 Parameters:
+  NetworkStackParameter:
+    Type: String
+    Default: vpc-sample-1-mb3
   KeyName:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: AWS::EC2::KeyPair::KeyName
@@ -356,11 +359,9 @@ Resources:
       InstanceType:
         Ref: InstanceTypeParameter
       KeyName: !Ref KeyName
-      AvailabilityZone: !Select
-        - 0
-        - Fn::GetAZs: !Ref 'AWS::Region'
-      SecurityGroups:
-        - Ref: WebServerSecurityGroup
+      SubnetId:
+          Fn::ImportValue:
+            Fn::Sub: "${NetworkStackParameter}-SubnetID"
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -463,3 +464,5 @@ Resources:
        Tags:
           - Key: Name
             Value: sg-WebServer
+  
+  
