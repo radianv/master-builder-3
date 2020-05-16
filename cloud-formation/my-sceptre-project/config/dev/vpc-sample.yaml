@@ -1,0 +1,2 @@
+template_path: vpc-sample.yaml
+stack_name: vpc-sample-mb3

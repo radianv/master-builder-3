@@ -1,0 +1,272 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Mictlan VPC
+
+Resources:
+  VPCMictlan:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.1.0.0/16
+      EnableDnsHostnames: true
+      Tags:
+      - Key: Name
+        Value: VPC-Mictlan
+
+  InternetGatewayMictlan:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: Mictlan Internet Gateway
+  
+  AttachGatewayMictlan:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPCMictlan
+      InternetGatewayId: !Ref InternetGatewayMictlan
+
+  MictlanPublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCMictlan
+      MapPublicIpOnLaunch: true
+      CidrBlock: 10.1.0.0/24
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Mictlan Public Subnet 1
+  
+  MictlanPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCMictlan
+      MapPublicIpOnLaunch: true
+      CidrBlock: 10.1.1.0/24
+      AvailabilityZone: !Select 
+        - '1'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Mictlan Public Subnet 2
+
+  MictlanPublicSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCMictlan
+      MapPublicIpOnLaunch: true
+      CidrBlock: 10.1.2.0/24
+      AvailabilityZone: !Select 
+        - '2'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Mictlan Public Subnet 3
+
+
+  MictlanPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCMictlan
+      MapPublicIpOnLaunch: true
+      CidrBlock: 10.1.3.0/24
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Mictlan Private Subnet 1
+
+  MictlanPrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCMictlan
+      MapPublicIpOnLaunch: true
+      CidrBlock: 10.1.4.0/24
+      AvailabilityZone: !Select 
+        - '1'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Mictlan Private Subnet 2
+
+  MictlanPrivateSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCMictlan
+      MapPublicIpOnLaunch: true
+      CidrBlock: 10.1.5.0/24
+      AvailabilityZone: !Select 
+        - '2'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Mictlan Private Subnet 3
+
+  MictlanManagementSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCMictlan
+      MapPublicIpOnLaunch: true
+      CidrBlock: 10.1.100.0/24
+      AvailabilityZone: !Select 
+        - '2'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: Mictlan Management Subnet 1
+
+  MictlanRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPCMictlan
+      Tags:
+        - Key: Name
+          Value: Public Route Table
+
+  MictlanPublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref MictlanRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGatewayMictlan
+
+  MictlanRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MictlanPublicSubnet1
+      RouteTableId: !Ref MictlanRouteTable
+  
+  MictlanRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MictlanPublicSubnet2
+      RouteTableId: !Ref MictlanRouteTable
+
+  MictlanRouteTableAssociation3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MictlanPublicSubnet3
+      RouteTableId: !Ref MictlanRouteTable
+
+  MictlanNatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+        - MictlanNatGatewayEIP
+        - AllocationId
+      SubnetId:
+        Ref: MictlanPublicSubnet1
+  MictlanNatGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+  
+
+  MictlanPrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPCMictlan
+      Tags:
+        - Key: Name
+          Value: Private Route Table
+
+  MictlanPrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref MictlanPrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref MictlanNatGateway
+
+  MictlanPrivateRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MictlanPrivateSubnet1
+      RouteTableId: !Ref MictlanPrivateRouteTable
+  
+  MictlanPrivateRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MictlanPrivateSubnet2
+      RouteTableId: !Ref MictlanPrivateRouteTable
+
+  MictlanPrivateRouteTableAssociation3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MictlanPrivateSubnet3
+      RouteTableId: !Ref MictlanPrivateRouteTable
+
+  MictlanSecurityGroupForInstances:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      VpcId: !Ref VPCMictlan
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: icmp
+        FromPort: 8
+        ToPort: -1
+        CidrIp: 10.0.0.0/8
+      Tags:
+        - Key: Name
+          Value: MictlanSecurityGroupForInstances
+
+Outputs:
+  VPC:
+    Description: VPCMictlan
+    Value: !Ref VPCMictlan
+    Export: 
+      Name: !Sub ${AWS::StackName}-vpc
+  VpcCIDR:
+    Description: Vpc Mictlan CIRD Block
+    Value: !GetAtt VPCMictlan.CidrBlock
+    Export:
+      Name: !Sub ${AWS::StackName}-vpc-cird
+  PublicSubnet1:
+    Description: MictlanPublicSubnet1
+    Value: !Ref MictlanPublicSubnet1
+    Export:
+      Name: !Sub ${AWS::StackName}-public-subnet1
+  PublicSubnet2:
+    Description: MictlanPublicSubnet2
+    Value: !Ref MictlanPublicSubnet2
+    Export:
+      Name: !Sub ${AWS::StackName}-public-subnet2
+  PublicSubnet3:
+    Description: MictlanPublicSubnet3
+    Value: !Ref MictlanPublicSubnet3
+    Export:
+      Name: !Sub ${AWS::StackName}-public-subnet3
+
+  PrivateSubnet1:
+    Description: MictlanPrivateSubnet1
+    Value: !Ref MictlanPrivateSubnet1
+    Export:
+      Name: !Sub ${AWS::StackName}-private-subnet1
+  PrivateSubnet2:
+    Description: MictlanPrivateSubnet2
+    Value: !Ref MictlanPrivateSubnet2
+    Export:
+      Name: !Sub ${AWS::StackName}-private-subnet2
+  PrivateSubnet3:
+    Description: MictlanPrivateSubnet3
+    Value: !Ref MictlanPrivateSubnet3
+    Export:
+      Name: !Sub ${AWS::StackName}-private-subnet3
+
+
+  ManagementSubnet1:
+    Description: MictlanManagementSubnet1
+    Value: !Ref MictlanManagementSubnet1
+    Export:
+      Name: !Sub ${AWS::StackName}-management-subnet1
+
+  MictlanSecurityGroupForInstances:
+    Description: MictlanSecurityGroupForInstances
+    Value: !Ref MictlanSecurityGroupForInstances
+    Export:
+      Name: !Sub ${AWS::StackName}-security-groups-public-instances
