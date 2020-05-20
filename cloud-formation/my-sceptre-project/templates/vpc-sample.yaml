@@ -163,7 +163,6 @@ Resources:
     Properties:
       Domain: vpc
   
-
   MictlanPrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -213,8 +212,23 @@ Resources:
         CidrIp: 10.0.0.0/8
       Tags:
         - Key: Name
-          Value: MictlanSecurityGroupForInstances
-
+          Value: RefMictlanSecurityGroupForInstances
+  MictlanALBInternetFacing:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: "MictlanALBInternetFacing"
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: '30'
+      Subnets:
+        - !Ref MictlanPublicSubnet1
+        - !Ref MictlanPublicSubnet2
+        - !Ref MictlanPublicSubnet3
+      SecurityGroups: [!Ref 'MictlanSecurityGroupForInstances']
+      Tags:
+        - Key: Name
+          Value: MictlanALBInternetFacing
 Outputs:
   VPC:
     Description: VPCMictlan
@@ -258,7 +272,6 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}-private-subnet3
 
-
   ManagementSubnet1:
     Description: MictlanManagementSubnet1
     Value: !Ref MictlanManagementSubnet1
@@ -270,3 +283,9 @@ Outputs:
     Value: !Ref MictlanSecurityGroupForInstances
     Export:
       Name: !Sub ${AWS::StackName}-security-groups-public-instances
+      
+  MictlanALBInternetFacing:
+    Description: MictlanALBInternetFacing
+    Value: !Ref MictlanALBInternetFacing
+    Export:
+      Name: !Sub ${AWS::StackName}-alb-internet-facing

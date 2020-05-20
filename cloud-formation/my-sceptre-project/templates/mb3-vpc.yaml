@@ -1,0 +1,641 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: MasterBuilder 3
+
+Parameters:
+    
+  SSHKeyName:
+    Description: 'Name of the ec2 key you need one to use this template'
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    Default: CaMyPrivateKeyMB3
+  DBNameOrder:
+    Default: orders
+    Description: The database name
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric
+      characters.
+  DBNameProduct:
+    Default: product
+    Description: The database name
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric
+      characters.
+  DBNameUser:
+    Default: user
+    Description: The database name
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric
+      characters.
+  DBUser:
+    Default: 'root'
+    NoEcho: 'true'
+    Description: The database admin account username
+    Type: String
+    MinLength: '1'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric
+      characters.
+  DBPassword:
+    Default: '101091Root'
+    NoEcho: 'true'
+    Description: The database admin account password
+    Type: String
+    MinLength: '1'
+    MaxLength: '41'
+    AllowedPattern: '[a-zA-Z0-9]+'
+    ConstraintDescription: must contain only alphanumeric characters.
+  DBAllocatedStorage:
+    Default: '5'
+    Description: The size of the database (Gb)
+    Type: Number
+    MinValue: '5'
+    MaxValue: '1024'
+    ConstraintDescription: must be between 5 and 1024Gb.
+  DBInstanceClass:
+    Description: The database instance type
+    Type: String
+    Default: db.t2.small
+    AllowedValues: [db.t1.micro, db.m1.small, db.m1.medium, db.m1.large, db.m1.xlarge,
+                    db.m2.xlarge, db.m2.2xlarge, db.m2.4xlarge, db.m3.medium, db.m3.large, db.m3.xlarge,
+                    db.m3.2xlarge, db.m4.large, db.m4.xlarge, db.m4.2xlarge, db.m4.4xlarge, db.m4.10xlarge,
+                    db.r3.large, db.r3.xlarge, db.r3.2xlarge, db.r3.4xlarge, db.r3.8xlarge, db.m2.xlarge,
+                    db.m2.2xlarge, db.m2.4xlarge, db.cr1.8xlarge, db.t2.micro, db.t2.small, db.t2.medium,
+                    db.t2.large]
+    ConstraintDescription: must select a valid database instance type.
+  MultiAZ:
+    Description: Multi-AZ master database
+    Type: String
+    Default: 'true'
+    AllowedValues: ['true', 'false']
+    ConstraintDescription: must be true or false.
+    
+Conditions:
+    Is-EC2-VPC: !Or [!Equals [!Ref 'AWS::Region', ca-central-1], !Equals [!Ref 'AWS::Region',
+                                                                            us-east-1]]
+    Is-EC2-Classic: !Not [{Condition: Is-EC2-VPC}]
+    
+Mappings:
+    RegionToAmazonAMI:
+        ca-central-1:
+            HVM64: ami-054362537f5132ce2
+        us-east-1:
+            HVM64: ami-0323c3dd2da7fb37d
+        us-west-1:
+            HVM64: ami-06ff511fea5db2c99
+        us-west-2:
+            HVM64: ami-0bb5806b2e825a199
+
+    NetworkToSubnet:
+        "10.0.0.0":
+            PubSubnetZoneA: "10.0.10.0/24"
+            PrivSubnetZoneA: "10.0.20.0/24"
+            PubSubnetZoneB: "10.0.30.0/24"
+            PrivSubnetZoneB: "10.0.40.0/24"
+    
+
+Resources:
+
+    # VPC
+    VPC:
+        Type: 'AWS::EC2::VPC'
+        Properties:
+            CidrBlock:
+                'Fn::Join': [ '/', [ '10.0.0.0', '16' ] ]
+            EnableDnsSupport: true
+            EnableDnsHostnames: true
+            InstanceTenancy: 'default'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      Ref: 'AWS::StackName'
+    
+
+    # Internet accessable subnet in the first availability zone
+    PubSubnetZoneA:
+        Type: 'AWS::EC2::Subnet'
+        Properties:
+            AvailabilityZone:
+                Fn::Select:
+                - '0'
+                - Fn::GetAZs:
+                    Ref: 'AWS::Region'
+            CidrBlock:
+                Fn::FindInMap:
+                - NetworkToSubnet
+                - '10.0.0.0'
+                - PubSubnetZoneA
+            MapPublicIpOnLaunch: 'True'
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Public', 'Zone A', !Ref 'AWS::StackName' ] ]
+
+    # Non-internet accessable subnet in the first availability zone
+    PrivSubnetZoneA:
+        Type: 'AWS::EC2::Subnet'
+        Properties:
+            AvailabilityZone:
+                Fn::Select:
+                - '0'
+                - Fn::GetAZs:
+                    Ref: 'AWS::Region'
+            CidrBlock:
+                Fn::FindInMap:
+                - NetworkToSubnet
+                - '10.0.0.0'
+                - PrivSubnetZoneA
+            MapPublicIpOnLaunch: 'False'
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Private', 'Zone A', !Ref 'AWS::StackName' ] ]
+
+    # Internet accessable subnet in the second availability zone
+    PubSubnetZoneB:
+        Type: 'AWS::EC2::Subnet'
+        Properties:
+            AvailabilityZone:
+                Fn::Select:
+                - '1'
+                - Fn::GetAZs:
+                    Ref: 'AWS::Region'
+            CidrBlock:
+                Fn::FindInMap:
+                - NetworkToSubnet
+                - '10.0.0.0'
+                - PubSubnetZoneB
+            MapPublicIpOnLaunch: 'True'
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Public', 'Zone B', !Ref 'AWS::StackName' ] ]
+
+    # Non-internet accessable subnet in the second availability zone
+    PrivSubnetZoneB:
+        Type: 'AWS::EC2::Subnet'
+        Properties:
+            AvailabilityZone:
+                Fn::Select:
+                - '1'
+                - Fn::GetAZs:
+                    Ref: 'AWS::Region'
+            CidrBlock:
+                Fn::FindInMap:
+                - NetworkToSubnet
+                - '10.0.0.0'
+                - PrivSubnetZoneB
+            MapPublicIpOnLaunch: 'False'
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Private', 'Zone B', !Ref 'AWS::StackName' ] ]
+
+    # Gateway to the internet
+    InternetGateway:
+        Type: 'AWS::EC2::InternetGateway'
+        Properties:
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      Ref: 'AWS::StackName'
+
+    # Associate the gateway to the VPC
+    GatewayAttachment:
+        Type: AWS::EC2::VPCGatewayAttachment
+        Properties:
+            InternetGatewayId:
+                Ref: 'InternetGateway'
+            VpcId:
+                Ref: 'VPC'
+
+    # Routing table for the public subnet in availability zone A
+    RouteTablePubZoneA:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Public', 'Zone A', !Ref 'AWS::StackName' ] ]
+
+    # Routing table for the public subnet in availability zone B
+    RouteTablePubZoneB:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Public', 'Zone B', !Ref 'AWS::StackName' ] ]
+
+    # Route traffic through the internet gateway
+    RoutePubZoneA:
+        DependsOn:
+            - InternetGateway
+        Type: AWS::EC2::Route
+        Properties:
+            DestinationCidrBlock: '0.0.0.0/0'
+            GatewayId:
+                Ref: 'InternetGateway'
+            RouteTableId:
+                Ref: 'RouteTablePubZoneA'
+
+    # Route traffic through the internet gateway
+    RoutePubZoneB:
+        DependsOn:
+            - InternetGateway
+        Type: AWS::EC2::Route
+        Properties:
+            DestinationCidrBlock: 0.0.0.0/0
+            GatewayId:
+                Ref: 'InternetGateway'
+            RouteTableId:
+                Ref: 'RouteTablePubZoneB'
+
+    # Associate public subnet to its routing table
+    RouteAssociationPubSubnetZoneA:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId:
+                Ref: 'PubSubnetZoneA'
+            RouteTableId:
+                Ref: 'RouteTablePubZoneA'
+
+    # Associate public subnet to its routing table
+    RouteAssociationPubSubnetZoneB:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId:
+                Ref: 'PubSubnetZoneB'
+            RouteTableId:
+                Ref: 'RouteTablePubZoneB'
+
+    # Routing table for the private subnet in availability zone A
+    RouteTablePrivZoneA:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Private', 'Zone A', !Ref 'AWS::StackName' ] ]
+
+    # Routing table for the private subnet in availability zone B
+    RouteTablePrivZoneB:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Private', 'Zone B', !Ref 'AWS::StackName' ] ]
+
+    # Associate the private subnet with its routing table
+    RouteAssociationPrivSubnetZoneA:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId:
+                Ref: 'PrivSubnetZoneA'
+            RouteTableId:
+                Ref: 'RouteTablePrivZoneA'
+
+    # Associate the private subnet with its routing table
+    RouteAssociationPrivSubnetZoneB:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId:
+                Ref: 'PrivSubnetZoneB'
+            RouteTableId:
+                Ref: 'RouteTablePrivZoneB'
+
+    # EC2 Security Group Allowing Port 22 and 80 from anywhere
+    EC2SecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: 'SSH and Port 80'
+            GroupName: sgEC2MB3
+            VpcId:
+              Ref: VPC
+            SecurityGroupIngress:
+                - IpProtocol: tcp
+                  FromPort: 22
+                  ToPort: 22
+                  CidrIp: 0.0.0.0/0
+                - IpProtocol: tcp
+                  FromPort: 80
+                  ToPort: 80
+                  SourceSecurityGroupId:
+                      Ref: ELBSecurityGroup
+    DB2EC2SecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: 'DB Acces'
+            GroupName: sgRDSMB3
+            VpcId:
+              Ref: VPC
+            SecurityGroupIngress:
+                - IpProtocol: tcp
+                  FromPort: 3306
+                  ToPort: 3306
+                  CidrIp: 0.0.0.0/0
+              
+    DBSecurityGroup:
+        Type: AWS::RDS::DBSecurityGroup
+        Condition: Is-EC2-Classic
+        Properties:
+          DBSecurityGroupIngress:
+            EC2SecurityGroupName: !Ref 'DB2EC2SecurityGroup'
+          GroupDescription: database access
+          Tags:
+            - Key: Name
+              Value: sg-DBSDatabase
+    DBSubnetGroup:
+        Type: AWS::RDS::DBSubnetGroup
+        Properties:
+          DBSubnetGroupDescription: database subNet Group
+          SubnetIds:
+            - !Ref PrivSubnetZoneA
+            - !Ref PrivSubnetZoneB
+          Tags:
+            - Key: Name
+              Value: sg-DBSDatabase
+    # ELB Security Group allowing Port 80 from anywhere
+    ELBSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: 'Only Port 80'
+            VpcId:
+              Ref: VPC
+            SecurityGroupIngress:
+                - IpProtocol: tcp
+                  FromPort: 80
+                  ToPort: 80
+                  CidrIp: 0.0.0.0/0
+    
+    MasterDBOrder:
+        Type: AWS::RDS::DBInstance
+        Properties:
+          DBName: !Ref 'DBNameOrder'
+          DBInstanceIdentifier: 'MB3-db-order'
+          AllocatedStorage: !Ref 'DBAllocatedStorage'
+          DBInstanceClass: !Ref 'DBInstanceClass'
+          Engine: MySQL
+          MasterUsername: !Ref 'DBUser'
+          MasterUserPassword: !Ref 'DBPassword'
+          MultiAZ: !Ref 'MultiAZ'
+          Tags:
+            - Key: Name
+              Value: Master Database
+          VPCSecurityGroups: 
+            - !Ref 'DB2EC2SecurityGroup'
+          DBSubnetGroupName: !Ref 'DBSubnetGroup'
+        DeletionPolicy: Snapshot
+        
+    MasterDBProduct:
+        Type: AWS::RDS::DBInstance
+        Properties:
+          DBName: !Ref 'DBNameProduct'
+          DBInstanceIdentifier: 'MB3-db-product'
+          AllocatedStorage: !Ref 'DBAllocatedStorage'
+          DBInstanceClass: !Ref 'DBInstanceClass'
+          Engine: MySQL
+          MasterUsername: !Ref 'DBUser'
+          MasterUserPassword: !Ref 'DBPassword'
+          MultiAZ: !Ref 'MultiAZ'
+          Tags:
+            - Key: Name
+              Value: Master Database
+          VPCSecurityGroups: 
+            - !Ref 'DB2EC2SecurityGroup'
+          DBSubnetGroupName: !Ref 'DBSubnetGroup'
+        DeletionPolicy: Snapshot
+    MasterDBUser:
+        Type: AWS::RDS::DBInstance
+        Properties:
+          DBName: !Ref 'DBNameUser'
+          DBInstanceIdentifier: 'MB3-db-user'
+          AllocatedStorage: !Ref 'DBAllocatedStorage'
+          DBInstanceClass: !Ref 'DBInstanceClass'
+          Engine: MySQL
+          MasterUsername: !Ref 'DBUser'
+          MasterUserPassword: !Ref 'DBPassword'
+          MultiAZ: !Ref 'MultiAZ'
+          Tags:
+            - Key: Name
+              Value: Master Database
+          VPCSecurityGroups: 
+            - !Ref 'DB2EC2SecurityGroup'
+          DBSubnetGroupName: !Ref 'DBSubnetGroup'
+        DeletionPolicy: Snapshot
+    ReplicaDBUser:
+        Type: AWS::RDS::DBInstance
+        Properties:
+          SourceDBInstanceIdentifier: !Ref 'MasterDBUser'
+          DBInstanceIdentifier: 'MB3-db-user-rr'
+          DBInstanceClass: !Ref 'DBInstanceClass'
+          Tags:
+          - Key: Name
+            Value: Read Replica Database
+    
+    # Linux Instance with Apache running on Port 80
+    WebServer1:
+      Type: AWS::EC2::Instance
+      Properties:
+        ImageId:
+          Fn::FindInMap:
+            - RegionToAmazonAMI
+            - Ref: 'AWS::Region'
+            - HVM64
+        InstanceInitiatedShutdownBehavior: stop
+        InstanceType: t2.large
+        KeyName:
+          Ref: SSHKeyName
+        Monitoring: 'true'
+        NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+          - !Ref EC2SecurityGroup
+          SubnetId:
+            Ref: PubSubnetZoneA
+        Tenancy: default
+        UserData:
+            Fn::Base64: !Sub |
+              #!/bin/bash
+              yum update -y
+              yum install -y git
+              yum -y localinstall https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+              yum  install -y mysql-community-client
+              amazon-linux-extras install docker
+              service docker start
+              usermod -a -G docker ec2-user
+              curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              chmod +x /usr/local/bin/docker-compose
+              ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+              git clone https://github.com/radianv/master-builder-3.git
+              docker-compose -f /master-builder-3/workspace/dev/code-webapp-micro/frontend/docker-compose.deploy.aws.yml up -d
+              chkconfig docker on
+        Tags:
+          - Key: Name
+            Value: WebServer1
+            
+    WebServer2:
+      Type: AWS::EC2::Instance
+      Properties:
+        ImageId:
+          Fn::FindInMap:
+            - RegionToAmazonAMI
+            - Ref: 'AWS::Region'
+            - HVM64
+        InstanceInitiatedShutdownBehavior: stop
+        InstanceType: t2.large
+        KeyName:
+          Ref: SSHKeyName
+        Monitoring: 'true'
+        NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+          - !Ref EC2SecurityGroup
+          SubnetId:
+            Ref: PubSubnetZoneB
+        Tenancy: default
+        UserData:
+            Fn::Base64: !Sub |
+              #!/bin/bash
+              yum update -y
+              yum install -y git
+              yum -y localinstall https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+              yum  install -y mysql-community-client
+              amazon-linux-extras install docker
+              service docker start
+              usermod -a -G docker ec2-user
+              curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              chmod +x /usr/local/bin/docker-compose
+              ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+              git clone https://github.com/radianv/master-builder-3.git
+              docker-compose -f /master-builder-3/workspace/dev/code-webapp-micro/frontend/docker-compose.deploy.aws.yml up -d
+              chkconfig docker on
+        Tags:
+          - Key: Name
+            Value: WebServer2
+
+    # Target Group
+    EC2TargetGroup:
+      Type: AWS::ElasticLoadBalancingV2::TargetGroup
+      Properties:
+        HealthCheckIntervalSeconds: 30
+        HealthCheckProtocol: HTTP
+        HealthCheckTimeoutSeconds: 15
+        HealthyThresholdCount: 5
+        Matcher:
+          HttpCode: '200'
+        Name: EC2TargetGroup
+        Port: 80
+        Protocol: HTTP
+        TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: '20'
+        Targets:
+        - Id: 
+            Ref: WebServer1
+        - Id: 
+            Ref: WebServer2
+        Port: 80
+        UnhealthyThresholdCount: 3
+        VpcId:
+          Ref: 'VPC'
+        Tags:
+        - Key: Name
+          Value: EC2TargetGroup
+        - Key: Port
+          Value: 80
+
+    #ELB (ALB)
+    ALBListener:
+      Type: AWS::ElasticLoadBalancingV2::Listener
+      Properties:
+        DefaultActions:
+          - Type: forward
+            TargetGroupArn:
+              Ref: EC2TargetGroup
+        LoadBalancerArn:
+            Ref: ApplicationLoadBalancer
+        Port: 80
+        Protocol: HTTP
+    ApplicationLoadBalancer:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Properties:
+        Scheme: internet-facing # or internal
+        Subnets:
+        - Ref: PubSubnetZoneA
+        - Ref: PubSubnetZoneB
+        SecurityGroups:
+        - Ref: ELBSecurityGroup
+    
+
+Outputs:
+    VPC:
+        Description: 'Virtual Private Cloud'
+        Value:
+          Ref: 'VPC'
+        Export:
+            Name: !Sub ${AWS::StackName}-vpc
+    ALBPublicDNS:
+        Description: 'Application Load Balancer Public DNSName'
+        Value:
+          !GetAtt ApplicationLoadBalancer.DNSName
+        Export:
+            Name: !Sub ${AWS::StackName}-alb-public-DNSName
+    EC2Instance:
+        Description: 'EC2 Instance WebServer1'
+        Value:
+          Ref: WebServer1
+        Export:
+            Name: !Sub ${AWS::StackName}-ec2-instance-WebServer1
+    EC2Instance:
+        Description: 'EC2 Instance WebServer2'
+        Value:
+          Ref: WebServer2
+        Export:
+            Name: !Sub ${AWS::StackName}-ec2-instance-WebServer2
+    EC2TargetGroup:
+        Description: 'EC2 Target Group'
+        Value:
+          Ref: EC2TargetGroup
+        Export:
+            Name: !Sub ${AWS::StackName}-ec2-target-group
+    ApplicationLoadBalancer:
+        Description: 'Application Load Balancer'
+        Value:
+          Ref: ApplicationLoadBalancer
+        Export:
+            Name: !Sub ${AWS::StackName}-alb-internal
+            
+    EC2SecurityGroup:
+        Description: 'EC2 Security Group'
+        Value:
+          Ref: EC2SecurityGroup
+        Export:
+            Name: !Sub ${AWS::StackName}-ec2-ecurity-group
