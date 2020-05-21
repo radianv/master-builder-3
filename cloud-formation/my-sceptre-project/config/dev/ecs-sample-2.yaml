@@ -1,0 +1,2 @@
+template_path: ecs-sample-2.yaml
+stack_name: ecs-sample-2-mb3

@@ -91,6 +91,9 @@ Parameters:
       c4.xlarge, c5.large, c5.xlarge, r4.large, r4.xlarge, r5.large, r5.xlarge, i3.large,
       i3.xlarge]
     ConstraintDescription: Please choose a valid instance type.
+  LoadBalancerName:
+    Type: String
+    Default: 'alb-MyFrontend'
   ECSAMI:
     Description: AMI ID
     Type: AWS::SSM::Parameter::Value<String>
@@ -103,6 +106,29 @@ Mappings:
       CIDR: '10.0.0.0/24'
     PublicTwo:
       CIDR: '10.0.1.0/24'
+  AmazonLinuxAMI:
+    us-east-1:
+      AMI: ami-6df8fe7a
+    us-east-2:
+      AMI: ami-c6b5efa3
+    us-west-1:
+      AMI: ami-1eda8d7e
+    us-west-2:
+      AMI: ami-a2ca61c2
+    eu-west-1:
+      AMI: ami-ba346ec9
+    eu-west-2:
+      AMI: ami-42c5cf26
+    eu-central-1:
+      AMI: ami-e012d48f
+    ap-northeast-1:
+      AMI: ami-08f7956f
+    ap-southeast-1:
+      AMI: ami-f4832f97
+    ap-southeast-2:
+      AMI: ami-774b7314
+    ca-central-1:
+      AMI: ami-be45f7da
 Resources:
   # VPC into which stack instances will be placed
   VPC:
@@ -111,6 +137,15 @@ Resources:
       EnableDnsSupport: true
       EnableDnsHostnames: true
       CidrBlock: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+  HostedZone:
+    Type: 'AWS::Route53::HostedZone'
+    Properties:
+      HostedZoneConfig:
+        Comment: Hosted Zone for ECS Service Discovery
+      Name: servicelookup.internal
+      VPCs:
+        - VPCId: !Ref VPC
+          VPCRegion: !Ref 'AWS::Region'
   PublicSubnetOne:
     Type: AWS::EC2::Subnet
     Properties:
@@ -172,6 +207,15 @@ Resources:
               FromPort: 3306
               ToPort: 3306
               CidrIp: 0.0.0.0/0
+  ECSInstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    DependsOn: GatewayAttachement
+    Properties:
+      GroupDescription: Security Group for ECSInstance
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: ECSInstanceSecurityGroup
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
@@ -201,19 +245,204 @@ Resources:
         - !Ref 'DB2EC2SecurityGroup'
       DBSubnetGroupName: !Ref 'DBSubnetGroup'
     DeletionPolicy: Snapshot
-  ReplicaDBUser:
-    Type: AWS::RDS::DBInstance
+
+  
+  InstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
     Properties:
-      SourceDBInstanceIdentifier: !Ref 'MasterDBUser'
-      DBInstanceIdentifier: 'MB3-db-user-rr'
-      DBInstanceClass: !Ref 'DBInstanceClass'
-      Tags:
-      - Key: Name
-        Value: Read Replica Database
-    
+      Path: /
+      Roles:
+        - !Ref InstanceRole  
   # ECS Resources
   ECSCluster:
     Type: AWS::ECS::Cluster
+    DependsOn: HostedZone
+  FrontendRepository:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: frontend-mb3-service
+  UserRepository:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: user-mb3-service
+  ProductRepository:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: product-mb3-service
+  OrderRepository:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: order-mb3-service
+  DockerBuildWaitHandle:
+    Type: 'AWS::CloudFormation::WaitConditionHandle'
+  DockerBuildWaitCondition:
+    Type: 'AWS::CloudFormation::WaitCondition'
+    DependsOn: DockerBuilder
+    Properties:
+      Handle: !Ref DockerBuildWaitHandle
+      Timeout: '7200'
+  DockerBuilder:
+    Type: 'AWS::EC2::Instance'
+    DependsOn:
+      - OrderRepository
+      - ProductRepository
+      - UserRepository
+      - FrontendRepository
+    Properties:
+      KeyName: !Ref SSHKeyName
+      ImageId: !FindInMap 
+        - AmazonLinuxAMI
+        - !Ref 'AWS::Region'
+        - AMI
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref InstanceProfile
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref EcsSecurityGroup
+          SubnetId: !Ref PublicSubnetOne
+      UserData: !Base64 
+        'Fn::Join':
+          - ''
+          - - |
+              #!/bin/bash
+            - |
+              yum install -y aws-cfn-bootstrap
+            - |
+              yum update -y aws-cfn-bootstrap
+            - |
+              yum install -y git aws-cli
+            - |
+              git clone https://github.com/radianv/master-builder-3.git
+            - |
+              $(aws ecr get-login --no-include-email --region ${AWS::Region})
+            - 'docker build -t '
+            - !Ref 'AWS::AccountId'
+            - .dkr.ecr.
+            - !Ref 'AWS::Region'
+            - >
+              .amazonaws.com/frontend-mb3-service
+              master-builder-3/workspace/dev/code-webapp-micro/frontend
+            - 'docker build -t '
+            - !Ref 'AWS::AccountId'
+            - .dkr.ecr.
+            - !Ref 'AWS::Region'
+            - >
+              .amazonaws.com/user-mb3-service
+              master-builder-3/workspace/dev/code-webapp-micro/user_service
+            - 'docker build -t '
+            - !Ref 'AWS::AccountId'
+            - .dkr.ecr.
+            - !Ref 'AWS::Region'
+            - >
+              .amazonaws.com/product-mb3-service
+              master-builder-3/workspace/dev/code-webapp-micro/product_service
+            - 'docker build -t '
+            - !Ref 'AWS::AccountId'
+            - .dkr.ecr.
+            - !Ref 'AWS::Region'
+            - >
+              .amazonaws.com/order-mb3-service
+              master-builder-3/workspace/dev/code-webapp-micro/order_service
+            - 'docker push '
+            - !Ref 'AWS::AccountId'
+            - .dkr.ecr.
+            - !Ref 'AWS::Region'
+            - >
+              .amazonaws.com/order-mb3-service
+            - /opt/aws/bin/cfn-signal -e 0 -r "Build Process Complete" '
+            - !Ref DockerBuildWaitHandle
+            - |
+              '
+      Tags:
+        - Key: Application
+          Value: !Ref 'AWS::StackName'
+        - Key: Name
+          Value: ECS refarch instance docker builder - MB3
+  UserDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    DependsOn: DockerBuildWaitCondition
+    Properties:
+      ContainerDefinitions:
+        - Name: time-service
+          Image: !Join 
+            - ''
+            - - !Ref 'AWS::AccountId'
+              - .dkr.ecr.
+              - !Ref 'AWS::Region'
+              - '.amazonaws.com/user-mb3-service'
+          Cpu: '100'
+          Memory: '100'
+          PortMappings:
+            - ContainerPort: 5000
+          Essential: true
+          Environment:
+            - Name: TIME_USERNAME
+              Value: admin
+            - Name: TIME_PASSWORD
+              Value: password
+            - Name: SERVICE_8081_NAME
+              Value: _time._tcp
+  FrontendDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    DependsOn: DockerBuildWaitCondition
+    Properties:
+      ContainerDefinitions:
+        - Name: frontend-service
+          Image: !Join 
+            - ''
+            - - !Ref 'AWS::AccountId'
+              - .dkr.ecr.
+              - !Ref 'AWS::Region'
+              - '.amazonaws.com/frontend-mb3-service'
+          Cpu: '200'
+          Memory: '200'
+          PortMappings:
+            - ContainerPort: 5000
+              HostPort: 80
+          Essential: true
+          Environment:
+            - Name: CALC_USERNAME
+              Value: admin
+            - Name: CALC_PASSWORD
+              Value: password
+            - Name: TIME_USERNAME
+              Value: admin
+            - Name: TIME_PASSWORD
+              Value: password
+  ECSALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: '30'
+      Subnets:
+        - !Ref PublicSubnetOne
+        - !Ref PublicSubnetTwo
+      SecurityGroups: [!Ref 'EcsSecurityGroup']
+  TargetGroup1:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Port: 80
+      Protocol: HTTP
+      VpcId: !Ref VPC
+  Listener1:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup1
+      LoadBalancerArn: !Ref ECSALB
+      Port: '80'
+      Protocol: HTTP
+  UserService:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster: !Ref ECSCluster
+      DesiredCount: 2
+      TaskDefinition: !Ref UserDefinition
   EcsSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -248,17 +477,7 @@ Resources:
     Properties:
       LogGroupName: !Join ['-', [ECSLogGroup, !Ref 'AWS::StackName']]
       RetentionInDays: 14
-  ECSALB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Scheme: internet-facing
-      LoadBalancerAttributes:
-      - Key: idle_timeout.timeout_seconds
-        Value: '30'
-      Subnets:
-        - !Ref PublicSubnetOne
-        - !Ref PublicSubnetTwo
-      SecurityGroups: [!Ref 'EcsSecurityGroup']
+  
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -292,6 +511,39 @@ Resources:
           yum -y localinstall https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
           yum  install -y mysql-community-client
           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+  ECSRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole'
+      Path: /
+  InstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - >-
+          arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+        - 'arn:aws:iam::aws:policy/AmazonRoute53FullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser'
+      Path: /
   ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -374,6 +626,15 @@ Resources:
       Roles: [!Ref 'EC2Role']
 
 Outputs:
+  PortalURL:
+    Description: Portal URL
+    Value: !Join 
+      - ''
+      - - 'http://'
+        - !GetAtt 
+          - ECSALB
+          - DNSName
+        - /
   ClusterName:
     Description: The name of the ECS cluster, used by the deploy script
     Value: !Ref 'ECSCluster'
