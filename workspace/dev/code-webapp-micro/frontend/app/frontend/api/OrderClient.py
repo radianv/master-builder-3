@@ -1,5 +1,16 @@
 from flask import session
 import requests
+import dns.resolver
+
+def dns_resolve(domain):
+        srvInfo = {}
+        srv_records=dns.resolver.query('_order._tcp.'+domain, 'SRV')
+        for srv in srv_records:
+            srvInfo['weight']   = srv.weight
+            srvInfo['host']     = str(srv.target).rstrip('.')
+            srvInfo['priority'] = srv.priority
+            srvInfo['port']     = srv.port
+        return 'http://'+srvInfo['host']+':'+str(srvInfo['port'])
 
 
 class OrderClient:
@@ -10,14 +21,14 @@ class OrderClient:
             'Authorization': 'Basic ' + session['user_api_key']
         }
 
-        response = requests.request(method="GET", url='http://order:5000/api/order', headers=headers)
+        response = requests.request(method="GET", url = dns_resolve('servicediscovery.internal')+'/api/order', headers=headers)
         order = response.json()
         return order
 
     @staticmethod
     def update_order(items):
 
-        url = 'http://order:5000/api/order/update'
+        url = dns_resolve('servicediscovery.internal')+'/api/order/update'
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
         }
@@ -33,7 +44,7 @@ class OrderClient:
             'product_id': product_id,
             'qty': qty,
         }
-        url = 'http://order:5000/api/order/add-item'
+        url = dns_resolve('servicediscovery.internal')+'/api/order/add-item'
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
         }
@@ -45,7 +56,7 @@ class OrderClient:
 
     @staticmethod
     def post_checkout():
-        url = 'http://order:5000/api/order/checkout'
+        url = dns_resolve('servicediscovery.internal')+'/api/order/checkout'
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
         }
