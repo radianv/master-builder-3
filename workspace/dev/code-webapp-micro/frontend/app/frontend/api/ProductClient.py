@@ -3,7 +3,7 @@ import dns.resolver
 
 def dns_resolve(domain):
         srvInfo = {}
-        srv_records=dns.resolver.query('_order._tcp.'+domain, 'SRV')
+        srv_records=dns.resolver.query('_product._tcp.'+domain, 'SRV')
         for srv in srv_records:
             srvInfo['weight']   = srv.weight
             srvInfo['host']     = str(srv.target).rstrip('.')
