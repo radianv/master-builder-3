@@ -1,0 +1,2 @@
+template_path: ecs-sample-2-no-builder.yaml
+stack_name: ecs-no-builder
