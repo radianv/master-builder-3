@@ -18,11 +18,10 @@ class OrderClient:
     @staticmethod
     def get_order():
         
-        url = dns_resolve('servicediscovery.internal')+'/api/order'
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
         }
-        response = requests.request(method="GET", url = url, headers=headers)
+        response = requests.request(method="GET", url=dns_resolve('servicediscovery.internal')+'/api/order', headers=headers)
         order = response.json()
         return order
 
