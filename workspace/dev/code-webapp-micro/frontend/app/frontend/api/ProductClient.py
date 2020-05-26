@@ -21,6 +21,7 @@ class ProductClient:
 
     @staticmethod
     def get_products():
-        r = requests.get(url = dns_resolve('servicediscovery.internal')+'/api/products')
+        url = dns_resolve('servicediscovery.internal')+'/api/products'
+        r = requests.get(url = url)
         products = r.json()
         return products
