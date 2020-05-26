@@ -20,8 +20,8 @@ class OrderClient:
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
         }
-
-        response = requests.request(method="GET", url = dns_resolve('servicediscovery.internal')+'/api/order', headers=headers)
+        url = dns_resolve('servicediscovery.internal')+'/api/order'
+        response = requests.request(method="GET", url = url, headers=headers)
         order = response.json()
         return order
 
