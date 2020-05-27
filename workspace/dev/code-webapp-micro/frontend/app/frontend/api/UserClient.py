@@ -21,7 +21,7 @@ class UserClient:
             'username': form.username.data,
             'password': form.password.data,
         }
-        url = dns_resolve('servicediscovery.internal')+'/api/user/login'
+        url = dns_resolve('servicediscoveryVA.internal')+'/api/user/login'
         #url = 'http://ecs-s-ECSAL-1LSW6XFAGQQS3-818649976.ca-central-1.elb.amazonaws.com/api/user/login'
         response = requests.request("POST", url=url, data=payload)
         if response:
@@ -32,7 +32,7 @@ class UserClient:
 
     @staticmethod
     def does_exist(username):
-        url = dns_resolve('servicediscovery.internal')+'/api/user/'+username+'/exist'
+        url = dns_resolve('servicediscoveryVA.internal')+'/api/user/'+username+'/exist'
         #url = 'http://ecs-s-ECSAL-1LSW6XFAGQQS3-818649976.ca-central-1.elb.amazonaws.com/api/user/'+username+'/exist'
         response = requests.request("GET", url=url)
         return response.status_code == 200
@@ -47,7 +47,7 @@ class UserClient:
             'last_name': form.last_name.data,
             'username': form.username.data
         }
-        url = dns_resolve('servicediscovery.internal')+'/api/user/create'
+        url = dns_resolve('servicediscoveryVA.internal')+'/api/user/create'
         #url = 'http://ecs-s-ECSAL-1LSW6XFAGQQS3-818649976.ca-central-1.elb.amazonaws.com/api/user/create'
         response = requests.request("POST", url=url, data=payload)
         if response:
@@ -60,7 +60,7 @@ class UserClient:
             'Authorization': 'Basic ' + session['user_api_key']
         }
 
-        response = requests.request(method="GET", url=dns_resolve('servicediscovery.internal')+'/api/user', headers=headers)
+        response = requests.request(method="GET", url=dns_resolve('servicediscoveryVA.internal')+'/api/user', headers=headers)
         #response = requests.request(method="GET", url='http://ecs-s-ECSAL-1LSW6XFAGQQS3-818649976.ca-central-1.elb.amazonaws.com/api/user', headers=headers)
         user = response.json()
         return user
