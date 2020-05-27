@@ -15,13 +15,13 @@ class ProductClient:
 
     @staticmethod
     def get_product(slug):
-        response = requests.request(method="GET", url = dns_resolve('servicediscoveryVA.internal')+'/api/product/' + slug)
+        response = requests.request(method="GET", url = dns_resolve('servicediscovery.internal')+'/api/product/' + slug)
         product = response.json()
         return product
 
     @staticmethod
     def get_products():
-        url = dns_resolve('servicediscoveryVA.internal')+'/api/products'
+        url = dns_resolve('servicediscovery.internal')+'/api/products'
         r = requests.get(url = url)
         products = r.json()
         return products

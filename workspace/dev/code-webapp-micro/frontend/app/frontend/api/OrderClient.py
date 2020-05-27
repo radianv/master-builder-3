@@ -21,14 +21,14 @@ class OrderClient:
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
         }
-        response = requests.request(method="GET", url=dns_resolve('servicediscoveryva.internal')+'/api/order', headers=headers)
+        response = requests.request(method="GET", url=dns_resolve('servicediscovery.internal')+'/api/order', headers=headers)
         order = response.json()
         return order
 
     @staticmethod
     def update_order(items):
 
-        url = dns_resolve('servicediscoveryva.internal')+'/api/order/update'
+        url = dns_resolve('servicediscovery.internal')+'/api/order/update'
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
         }
@@ -44,7 +44,7 @@ class OrderClient:
             'product_id': product_id,
             'qty': qty,
         }
-        url = dns_resolve('servicediscoveryva.internal')+'/api/order/add-item'
+        url = dns_resolve('servicediscovery.internal')+'/api/order/add-item'
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
         }
@@ -56,7 +56,7 @@ class OrderClient:
 
     @staticmethod
     def post_checkout():
-        url = dns_resolve('servicediscoveryva.internal')+'/api/order/checkout'
+        url = dns_resolve('servicediscovery.internal')+'/api/order/checkout'
         headers = {
             'Authorization': 'Basic ' + session['user_api_key']
         }
