@@ -14,7 +14,8 @@ login_manager.init_app(app)
 app.config.update(dict(
     SECRET_KEY="powerful secretkey",
     #SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:test@user_db/user',
-    SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:101091Root@mb3-db-user.ciiwt8d1nmks.ca-central-1.rds.amazonaws.com/user',
+    #SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:101091Root@mb3-db-user.ciiwt8d1nmks.ca-central-1.rds.amazonaws.com/user',
+    SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:101091Root@mb3-db-user.ccrz0cn5l7sv.us-east-1.rds.amazonaws.com/user',
 ))
 
 models.init_app(app)
@@ -68,4 +69,4 @@ def user_loaded_from_header(self, user=None):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=5000)

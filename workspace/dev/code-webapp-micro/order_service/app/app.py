@@ -9,7 +9,8 @@ app.config.update(dict(
     SECRET_KEY="powerful secretkey",
     WTF_CSRF_SECRET_KEY="a csrf secret key",
     #SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:test@order_db/order',
-    SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:101091Root@mb3-db-order.ciiwt8d1nmks.ca-central-1.rds.amazonaws.com:3306/orders',
+    #SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:101091Root@mb3-db-order.ciiwt8d1nmks.ca-central-1.rds.amazonaws.com:3306/orders',
+    SQLALCHEMY_DATABASE_URI='mysql+mysqlconnector://root:101091Root@mb3-db-order.ccrz0cn5l7sv.us-east-1.rds.amazonaws.com:3306/orders',
 ))
 
 models.init_app(app)
